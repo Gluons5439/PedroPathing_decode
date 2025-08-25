@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
  * @version 2.0, 11/28/2024
  */
 
-@Autonomous(name = "Example Auto Blue", group = "Examples")
+@Autonomous(name = "Test", group = "Examples")
 public class PedroPathing_Example extends OpMode {
 
     private Follower follower;
@@ -196,6 +196,7 @@ public class PedroPathing_Example extends OpMode {
     @Override
     public void init() {
         // Initialize the follower, path builder, and timers
+        Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         pathTimer = new Timer();
         actionTimer = new Timer();
