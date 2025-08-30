@@ -20,6 +20,17 @@ public class SpecimenAuto {
     private int pathState;
 
     private final Pose startingPose = new Pose(9, 40, Math.toRadians(0));
+    private final Pose specimen1Pos1 = new Pose(60, 40, startingPose.getHeading());
+    private final Pose specimen1Pos2 = new Pose(60, 21, startingPose.getHeading());
+    private final Pose specimen1Pos3 = new Pose(20, 21, startingPose.getHeading());
+    private final Pose specimen2Pos1 = new Pose(60, 10, startingPose.getHeading());
+    private final Pose specimen2Pos2 = new Pose(20, 10, startingPose.getHeading());
+    private final Pose specimen3Pos1 = new Pose(60, 5, startingPose.getHeading());
+    private final Pose specimenPark = new Pose(15, 5, startingPose.getHeading());
+
+
+
+
     //specOne control points
     private PathChain sidespecimen1,backspecimen1,forwardspecimen2,sidespecimen2,backspecimen2,forwardspecimen3,sidespecimen3,park;
     private Path forwardspecimen1;

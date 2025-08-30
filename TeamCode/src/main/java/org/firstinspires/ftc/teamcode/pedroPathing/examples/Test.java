@@ -67,6 +67,13 @@ public class Test {
             e.printStackTrace();
         }
 
+
+
+
+
+
+
+
         // Start simulation
         meepMeep.setBackground(img)
                 .setDarkMode(true)
@@ -134,7 +141,7 @@ public class Test extends OpMode {
 
                 .build();
 
-        follower.followPath(pushBotAuto);
+        follower.followPath(pushBotAuto, true);
 
         timer = new Timer();
         timer.resetTimer();
@@ -151,7 +158,8 @@ public class Test extends OpMode {
         telemetry.addData("X", pose.getX());
         telemetry.addData("Y", pose.getY());
         telemetry.addData("Heading (deg)", Math.toDegrees(pose.getHeading()));
-       // telemetry.addData("Finished", follower.isFinished());
+        //telemetry.addData("Finished", follower.isFinished());
         telemetry.update();
     }
 }
+

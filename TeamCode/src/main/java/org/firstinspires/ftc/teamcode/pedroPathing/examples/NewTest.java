@@ -11,21 +11,23 @@ import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
-
-public class NewTest {
+@Autonomous(name = "PushBotTest")
+public class NewTest extends OpMode {
     private Follower follower;
     private int pathState;
 
     private final Pose startingPose = new Pose(15.5, 61.75, Math.toRadians(270));
     //specOne control points
-    private final Pose specOneControlp1 = new Pose(30, 45, Math.toRadians(90));
-    private final Pose specOneControlp2 = new Pose(45, 20, Math.toRadians(90));
-    private final Pose specOne = new Pose(56,0,Math.toRadians(90));
-    private final Pose pushSpecOne = new Pose(56,61.75,Math.toRadians(90));
-    private final Pose endPose = new Pose(startingPose.getX(), startingPose.getY(), Math.toRadians(90));
+    private final Pose specOneControlp1 = new Pose(30, 30, startingPose.getHeading());
+    private final Pose specOneControlp2 = new Pose(45, 20, startingPose.getHeading());
+    private final Pose specOne = new Pose(56,0,startingPose.getHeading());
+    private final Pose pushSpecOne = new Pose(56,61.75,startingPose.getHeading());
+    private final Pose endPose = new Pose(startingPose.getX(), startingPose.getY(), startingPose.getHeading());
     private Path frontSpecOne, goToEndPose;
     private PathChain pushSpecimen;
     Timer pathTimer, opmodeTimer;
@@ -36,8 +38,11 @@ public class NewTest {
 
         pushSpecimen=follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specOne), new Point(pushSpecOne)))
+                .setConstantHeadingInterpolation(startingPose.getHeading())
                         .build();
+
         goToEndPose=new Path(new BezierLine(new Point(pushSpecOne),new Point(endPose)));
+        goToEndPose.setConstantHeadingInterpolation(startingPose.getHeading());
     }
     public void autonomousPathUpdate() {
         switch (pathState) {
