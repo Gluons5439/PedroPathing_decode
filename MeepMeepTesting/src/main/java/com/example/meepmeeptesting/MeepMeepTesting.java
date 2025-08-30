@@ -283,7 +283,7 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
 
-        PedroPathingBotEntity robot = new Follower(hardwareMap, FConstants.class, LConstants.class)
+        PedroPathingBotEntity robot = new Follower(hardwareMap)
                 .setDimensions(15, 17.5)
                 .setConstraints(70, -50, -25, -60, 3)
                 .build();
