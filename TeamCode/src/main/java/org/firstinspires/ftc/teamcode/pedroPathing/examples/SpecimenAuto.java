@@ -37,29 +37,37 @@ public class SpecimenAuto extends OpMode {
         forwardspecimen1= new Path(new BezierLine(new Point(startingPose), new Point(specimen1Pos1)));
         sidespecimen1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specimen1Pos1), new Point(specimen1Pos2)))
+                .setConstantHeadingInterpolation(startingPose.getHeading())
                 .build();
         backspecimen1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specimen1Pos2), new Point(specimen1Pos3)))
+                .setConstantHeadingInterpolation(startingPose.getHeading())
                 .build();
         forwardspecimen2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specimen1Pos3), new Point(specimen1Pos2)))
+                .setConstantHeadingInterpolation(startingPose.getHeading())
                 .build();
         sidespecimen2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specimen1Pos2),new Point(specimen2Pos1)))
+                .setConstantHeadingInterpolation(startingPose.getHeading())
                 .build();
         backspecimen2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specimen2Pos1),new Point(specimen2Pos2)))
+                .setConstantHeadingInterpolation(startingPose.getHeading())
                 .build();
         forwardspecimen3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specimen2Pos2), new Point(specimen2Pos1)))
+                .setConstantHeadingInterpolation(startingPose.getHeading())
                 .build();
         sidespecimen3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(specimen2Pos1), new Point(specimen3Pos1)))
+                .setConstantHeadingInterpolation(startingPose.getHeading())
                 .build();
         park =new Path(new BezierLine(new Point(specimen3Pos1), new Point(parkSpecimen)));
 
 
         forwardspecimen1.setConstantHeadingInterpolation(startingPose.getHeading());
+        park.setConstantHeadingInterpolation(startingPose.getHeading());
 
     }
     public void autonomousPathUpdate() {
