@@ -135,7 +135,7 @@ public class AutoInitCameraOnly extends OpMode {
 
             if (Math.abs(error) > DEAD_ZONE) {
                 // Proportional control
-                double power = -error * kP;
+                double power = error * kP;
 
                 // Clamp power to max range
                 power = Math.max(-MAX_POWER, Math.min(MAX_POWER, power));
