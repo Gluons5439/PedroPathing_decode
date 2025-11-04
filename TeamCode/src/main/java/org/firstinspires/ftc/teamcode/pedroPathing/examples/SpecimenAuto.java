@@ -4,7 +4,9 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Localizer; // <-- IMPORT THIS
 import com.pedropathing.localization.Pose;
+import com.pedropathing.localization.localizers.PinpointLocalizer; // <-- THIS IS THE CORRECT IMPORT PATH
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
@@ -20,127 +22,55 @@ public class SpecimenAuto extends OpMode {
     private Follower follower;
     private int pathState;
 
+    // --- NEW POSES ---
+    // We'll keep the original start
     private final Pose startingPose = new Pose(9, 45, Math.toRadians(0));
-    private final Pose standPose = new Pose (30,34, startingPose.getHeading());
-    private final Pose specimen1Pos1 = new Pose(58, 34, startingPose.getHeading());
-    private final Pose specimen1Pos2 = new Pose(58, 23, startingPose.getHeading());
-    private final Pose specimen1Pos3 = new Pose(18, 23, startingPose.getHeading());
-    private final Pose specimen2Pos1 = new Pose(58, 13, startingPose.getHeading());
-    private final Pose specimen2Pos2 = new Pose(18, 13, startingPose.getHeading());
-    private final Pose specimen3Pos1 = new Pose(58, 9, startingPose.getHeading());
-    private final Pose parkSpecimen = new Pose(15, 9, startingPose.getHeading());
-    //specOne control points
-    private PathChain forwardspecimen1, sidespecimen1,backspecimen1,forwardspecimen2,sidespecimen2,backspecimen2,forwardspecimen3,sidespecimen3;
-    private Path  diagonalspecimen , park;
+
+    // 2 meters = 78.74 inches.
+    // Move 78.74 inches forward (in the +X direction)
+    private final Pose pose1 = new Pose(9 + 78.74, 45, Math.toRadians(0));
+
+    // From pose1, turn 90 degrees CCW (to face +Y) and move 78.74 inches forward (in the +Y direction)
+    private final Pose pose2 = new Pose(87.74, 45 + 78.74, Math.toRadians(90));
+    // --- END NEW POSES ---
+
+    // --- NEW PATHS ---
+    private Path moveForward;
+    private Path turnAndMoveRight;
+    // --- END NEW PATHS ---
+
     Timer pathTimer, opmodeTimer;
     public void buildPaths()
     {
-        diagonalspecimen= new Path(new BezierLine(new Point(startingPose), new Point(standPose)));
-        forwardspecimen1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(standPose), new Point(specimen1Pos1)))
-                .setConstantHeadingInterpolation(startingPose.getHeading())
-                .build();
-        sidespecimen1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimen1Pos1), new Point(specimen1Pos2)))
-                .setConstantHeadingInterpolation(startingPose.getHeading())
-                .build();
-        backspecimen1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimen1Pos2), new Point(specimen1Pos3)))
-                .setConstantHeadingInterpolation(startingPose.getHeading())
-                .build();
-        forwardspecimen2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimen1Pos3), new Point(specimen1Pos2)))
-                .setConstantHeadingInterpolation(startingPose.getHeading())
-                .build();
-        sidespecimen2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimen1Pos2),new Point(specimen2Pos1)))
-                .setConstantHeadingInterpolation(startingPose.getHeading())
-                .build();
-        backspecimen2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimen2Pos1),new Point(specimen2Pos2)))
-                .setConstantHeadingInterpolation(startingPose.getHeading())
-                .build();
-        forwardspecimen3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimen2Pos2), new Point(specimen2Pos1)))
-                .setConstantHeadingInterpolation(startingPose.getHeading())
-                .build();
-        sidespecimen3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimen2Pos1), new Point(specimen3Pos1)))
-                .setConstantHeadingInterpolation(startingPose.getHeading())
-                .build();
-        park =new Path(new BezierLine(new Point(specimen3Pos1), new Point(parkSpecimen)));
+        // Path 1: Move forward 2 meters
+        moveForward = new Path(new BezierLine(new Point(startingPose), new Point(pose1)));
+        // Keep the heading at 0 degrees
+        moveForward.setConstantHeadingInterpolation(startingPose.getHeading());
 
-
-        diagonalspecimen.setConstantHeadingInterpolation(startingPose.getHeading());
-        park.setConstantHeadingInterpolation(startingPose.getHeading());
-
+        // Path 2: Turn to 90 degrees and move 2 meters "right" (which is now "forward" for the robot)
+        turnAndMoveRight = new Path(new BezierLine(new Point(pose1), new Point(pose2)));
+        // Set the heading to 90 degrees for this entire path
+        turnAndMoveRight.setConstantHeadingInterpolation(Math.toRadians(90));
     }
 
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                follower.followPath(diagonalspecimen);
+                // Start the first path
+                follower.followPath(moveForward);
                 setPathState(1);
                 break;
             case 1:
-
-
-                 if(!follower.isBusy()) {
-                       follower.followPath(forwardspecimen1,true);
+                // When the first path is done, start the second path
+                if(!follower.isBusy()) {
+                    follower.followPath(turnAndMoveRight,true);
                     setPathState(2);
                 }
                 break;
             case 2:
-                 if(!follower.isBusy()) {
-                     follower.followPath(sidespecimen1,true);
-                    setPathState(3);
-                }
-                break;
-            case 3:
+                // When the second path is done, stop.
                 if(!follower.isBusy()) {
-                      follower.followPath(backspecimen1,true);
-                    setPathState(4);
-                }
-                break;
-            case 4:
-                  if(!follower.isBusy()) {
-                      follower.followPath(forwardspecimen2,true);
-                    setPathState(5);
-                }
-                break;
-            case 5:
-                      if(!follower.isBusy()) {
-                            follower.followPath(sidespecimen2,true);
-                    setPathState(6);
-                }
-                break;
-            case 6:
-                     if(!follower.isBusy()) {
-                          follower.followPath(backspecimen2, true);
-                    setPathState(7);
-                }
-                break;
-            case 7:
-                 if(!follower.isBusy()) {
-                        follower.followPath(forwardspecimen3,true);
-                    setPathState(8);
-                }
-                break;
-            case 8:
-                  if(!follower.isBusy()) {
-                        follower.followPath(sidespecimen3,true);
-                    setPathState(9);
-                }
-                break;
-            case 9:
-                if(!follower.isBusy()) {
-                    follower.followPath(park,true);
-                    setPathState(10);
-                }
-                break;
-            case 10:
-                  if(!follower.isBusy()) {
-                      setPathState(-1);
+                    setPathState(-1);
                 }
                 break;
         }
@@ -167,7 +97,17 @@ public class SpecimenAuto extends OpMode {
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
-        follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
+        // --- MODIFIED INITIALIZATION ---
+
+        // 1. Create the PinpointLocalizer, passing in the starting pose.
+        Localizer myLocalizer = new PinpointLocalizer(hardwareMap, startingPose);
+
+        // 2. Pass this custom localizer into the Follower constructor.
+        // This overrides the default internal IMU localizer.
+        follower = new Follower(hardwareMap, myLocalizer, FConstants.class, LConstants.class);
+
+        // --- END OF MODIFICATION ---
+
         follower.setStartingPose(startingPose);
         buildPaths();
     }

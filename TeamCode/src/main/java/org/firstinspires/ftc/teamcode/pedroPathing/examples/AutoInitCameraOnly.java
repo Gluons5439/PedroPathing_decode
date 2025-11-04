@@ -65,17 +65,15 @@ public class AutoInitCameraOnly extends OpMode {
     private VisionPortal visionPortal;
     private CRServo axonMotor;  // CRServo controlling the Axon
 
-    // Constants for tracking
     private static final int TARGET_TAG_ID = 20;
     private static final double IMAGE_WIDTH = 640.0;  // Assuming 640x480 resolution
     private static final double CENTER_X = IMAGE_WIDTH / 2.0;
     private static final double DEAD_ZONE = 15.0; // Pixels within which we stop moving
     private static final double kP = 0.0025; // Proportional constant (tune this)
-    private static final double MAX_POWER = 0.4; // Max speed for servo movement
+    private static final double MAX_POWER = 0.15; // Max speed for servo movement
 
     @Override
     public void init() {
-        // Initialize webcam and AprilTag detection
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         aprilTagProcessor = AprilTagProcessor.easyCreateWithDefaults();
 
@@ -117,7 +115,6 @@ public class AutoInitCameraOnly extends OpMode {
         List<AprilTagDetection> detections = aprilTagProcessor.getDetections();
         AprilTagDetection targetTag = null;
 
-        // Find AprilTag ID 20
         for (AprilTagDetection detection : detections) {
             if (detection.id == TARGET_TAG_ID) {
                 targetTag = detection;
@@ -134,26 +131,24 @@ public class AutoInitCameraOnly extends OpMode {
             telemetry.addData("Error from center", error);
 
             if (Math.abs(error) > DEAD_ZONE) {
-                // Proportional control
-                double power = -error * kP;
 
-                // Clamp power to max range
+                double power = error * kP;
+
                 power = Math.max(-MAX_POWER, Math.min(MAX_POWER, power));
 
                 axonMotor.setPower(power);
                 telemetry.addData("Servo Power", power);
             } else {
-                axonMotor.setPower(0);
+               // axonMotor.setPower(0);
                 telemetry.addLine("Tag centered — servo stopped.");
             }
         } else {
             // Tag not found
-            axonMotor.setPower(0);
+           // axonMotor.setPower(0);
             telemetry.addLine("Tag ID 20 not found — holding position.");
         }
 
         telemetry.update();
     }
 }
-
 
