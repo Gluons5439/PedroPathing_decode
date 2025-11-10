@@ -187,6 +187,7 @@ import com.pedropathing.localization.Pose;
 import com.pedropathing.localization.localizers.PinpointLocalizer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
@@ -203,8 +204,8 @@ public class ExampleRobotCentricTeleop extends OpMode {
     private Follower follower;
     private final Pose startPose = new Pose(0, 0, 0);
 
-    private Servo turretServo1;
-    private Servo turretServo2;
+    private CRServo turretServo1;
+    private CRServo turretServo2;
 
     private double turretTargetPosition = 0.5;
 
@@ -230,10 +231,10 @@ public class ExampleRobotCentricTeleop extends OpMode {
         follower.setStartingPose(startPose);
 
         try {
-            turretServo1 = hardwareMap.get(Servo.class, "turretServo1");
-            turretServo2 = hardwareMap.get(Servo.class, "turretServo2");
-            turretServo1.setPosition(turretTargetPosition);
-            turretServo2.setPosition(turretTargetPosition);
+            turretServo1 = hardwareMap.get(CRServo.class, "turretServo1");
+            turretServo2 = hardwareMap.get(CRServo.class, "turretServo2");
+            turretServo1.setPower(turretTargetPosition);
+            turretServo2.setPower(turretTargetPosition);
         } catch (Exception e) {
             telemetry.addData("Error", "Could not find turret servos. Check config.");
         }
@@ -289,8 +290,8 @@ public class ExampleRobotCentricTeleop extends OpMode {
 
         turretTargetPosition = Range.clip(turretTargetPosition, 0.0, 1.0);
         if (turretServo1 != null && turretServo2 != null) {
-            turretServo1.setPosition(turretTargetPosition);
-            turretServo2.setPosition(turretTargetPosition);
+            turretServo1.setPower(turretTargetPosition);
+            turretServo2.setPower(turretTargetPosition);
         }
 
         handleShooterControl();
