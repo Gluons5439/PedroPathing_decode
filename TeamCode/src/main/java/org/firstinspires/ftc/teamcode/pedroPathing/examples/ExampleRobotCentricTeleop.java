@@ -1,191 +1,5 @@
-/**
+/*
 
-package org.firstinspires.ftc.teamcode.pedroPathing.examples;
-
-import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Localizer; // <-- IMPORT THIS
-import com.pedropathing.localization.Pose;
-import com.pedropathing.localization.localizers.PinpointLocalizer; // <-- AND IMPORT THIS
-import com.pedropathing.util.Constants;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
-
-
-
-@TeleOp(name = "Example Robot-Centric Teleop", group = "Examples")
-public class ExampleRobotCentricTeleop extends OpMode {
-    private Follower follower;
-    private final Pose startPose = new Pose(0,0,0);
-
-    @Override
-    public void init() {
-        Localizer myLocalizer = new PinpointLocalizer(hardwareMap, startPose);
-
-        follower = new Follower(hardwareMap, myLocalizer, FConstants.class, LConstants.class);
-
-        follower.setStartingPose(startPose);
-    }
-
-    @Override
-    public void init_loop() {
-    }
-
-    @Override
-    public void start() {
-        follower.startTeleopDrive();
-    }
-
-    @Override
-    public void loop() {
-
-
-
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
-        follower.update();
-
-        telemetry.addData("X", follower.getPose().getX());
-        telemetry.addData("Y", follower.getPose().getY());
-        telemetry.addData("Heading in Degrees", Math.toDegrees(follower.getPose().getHeading()));
-
-        telemetry.update();
-
-    }
-
-    @Override
-    public void stop() {
-    }
-}
- **/
-
-/**
-package org.firstinspires.ftc.teamcode.pedroPathing.examples;
-
-import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Localizer;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.localization.localizers.PinpointLocalizer;
-import com.pedropathing.util.Constants;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
-
-@TeleOp(name = "Example Robot-Centric Teleop", group = "Examples")
-public class ExampleRobotCentricTeleop extends OpMode {
-    private Follower follower;
-    private final Pose startPose = new Pose(0, 0, 0);
-
-    // --- NEW TURRET VARIABLES ---
-    private Servo turretServo1;
-    private Servo turretServo2;
-
-
-    private double turretTargetPosition = 0.5;
-
-
-
-
-
-    @Override
-    public void init() {
-
-        Localizer myLocalizer = new PinpointLocalizer(hardwareMap, startPose);
-
-
-        follower = new Follower(hardwareMap, myLocalizer, FConstants.class, LConstants.class);
-
-        follower.setStartingPose(startPose);
-
-
-
-        try {
-            turretServo1 = hardwareMap.get(Servo.class, "turretServo1");
-            turretServo2 = hardwareMap.get(Servo.class, "turretServo2");
-
-
-
-
-            turretServo1.setPosition(turretTargetPosition);
-            turretServo2.setPosition(turretTargetPosition);
-
-        } catch (Exception e) {
-            telemetry.addData("Error", "Could not find turret servos. Check config.");
-        }
-
-    }
-
-
-    @Override
-    public void init_loop() {
-    }
-
-
-    @Override
-    public void start() {
-        follower.startTeleopDrive();
-    }
-
-
-    @Override
-    public void loop() {
-
-
-        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
-        follower.update();
-
-
-
-
-
-
-        telemetry.addData("X", follower.getPose().getX());
-        telemetry.addData("Y", follower.getPose().getY());
-        telemetry.addData("Heading in Degrees", Math.toDegrees(follower.getPose().getHeading()));
-
-
-        telemetry.addData("Turret Target Pos", "%.3f", turretTargetPosition);
-        telemetry.addData("Gamepad2 Left Stick X", "%.3f", gamepad2.left_stick_x);
-
-
-
-        telemetry.update();
-
-    }
-
-
-
-    private void handleTurretControl() {
-
-        double turretMoveInput = gamepad2.left_stick_x;
-
-
-        turretTargetPosition = (turretMoveInput + 1.0) / 2.0;
-
-
-
-
-        turretTargetPosition = Range.clip(turretTargetPosition, 0.0, 1.0);
-
-
-        turretServo1.setPosition(turretTargetPosition);
-        turretServo2.setPosition(turretTargetPosition);
-    }
-
-
-
-
-    @Override
-    public void stop() {
-    }
-}
- **/
 package org.firstinspires.ftc.teamcode.pedroPathing.examples;
 
 import com.pedropathing.follower.Follower;
@@ -195,50 +9,42 @@ import com.pedropathing.localization.localizers.PinpointLocalizer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-// --- VISION IMPORTS ---
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-// --- END VISION IMPORTS ---
+// --- LIMELIGHT IMPORTS ---
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
-
-import java.util.List;
 
 @TeleOp(name = "Example TeleOp with Turret Auto-Aim", group = "Examples")
 public class ExampleRobotCentricTeleop extends OpMode {
 
-    // === Pedro Pathing (Drivetrain) ===
     private Follower follower;
     private final Pose startPose = new Pose(0, 0, 0);
 
-    // === Turret Servos ===
     private Servo turretServo1;
     private Servo turretServo2;
 
     private double turretTargetPosition = 0.5;
 
+    private DcMotor shooterMotor;
+    private static final double SHOOTER_MAX_POWER = 1.0;
 
-    private AprilTagProcessor aprilTagProcessor;
-    private VisionPortal visionPortal;
+    // --- LIMELIGHT DECLARATION ---
+    private Limelight3A limelight;
 
     private static final int TARGET_TAG_ID = 20;
 
-    // *** PIXEL-BASED CONSTANTS ADAPTED TO REUSE EXISTING NAMES ***
-    // AIM_KP is now the conversion from PIXEL error to SERVO position delta. (TUNE THIS!)
-    private static final double AIM_KP = 0.0003;
-    // TARGET_YAW_DEADZONE is now the PIXEL DEADZONE (e.g., 15.0 pixels)
-    private static final double TARGET_YAW_DEADZONE = 15.0;
-    // MAX_CORRECTION is now the MAX SERVO POSITION CHANGE per loop.
-    private static final double MAX_CORRECTION = 0.01;
-
-    // *** NEW: Required for pixel center calculation ***
-    private static final double IMAGE_WIDTH = 640.0;
-    private static final double CENTER_X = IMAGE_WIDTH / 2.0;
+    // --- UPDATED CONSTANTS FOR STABLE AIMING ---
+    // Proportional constant (Kp) significantly reduced to stop oscillation
+    private static final double AIM_KP = 0.0008;
+    // Deadzone in degrees (tx)
+    private static final double AIM_DEADZONE = 1.5;
+    // Max rate of change for the servo position, reduced for smoother moves
+    private static final double MAX_CORRECTION = 0.003;
 
 
     @Override
@@ -257,116 +63,296 @@ public class ExampleRobotCentricTeleop extends OpMode {
         }
 
         try {
-            WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-            aprilTagProcessor = AprilTagProcessor.easyCreateWithDefaults();
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(webcamName)
-                    .addProcessor(aprilTagProcessor)
-                    .build();
-            telemetry.addData("VisionPortal", "Initialized");
+            shooterMotor = hardwareMap.get(DcMotor.class, "shooterMotor");
+            shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            telemetry.addData("Shooter", "Initialized");
         } catch (Exception e) {
-            telemetry.addData("Error", "Could not find Webcam 1. Check config.");
+            telemetry.addData("Error", "Could not find shooter.");
         }
+
+        // --- LIMELIGHT INITIALIZATION ---
+        try {
+            limelight = hardwareMap.get(Limelight3A.class, "Limelight");
+            // Set to Pipeline 0
+            limelight.pipelineSwitch(0);
+            telemetry.addData("Limelight", "Initialized on Pipeline 0");
+        } catch (Exception e) {
+            telemetry.addData("Error", "Could not find Limelight 3A. Check config.");
+        }
+
         telemetry.update();
     }
 
     @Override
     public void start() {
         follower.startTeleopDrive();
+        if (limelight != null) {
+            limelight.start();
+        }
     }
 
     @Override
     public void loop() {
 
-        // --- 1. DRIVETRAIN CONTROL ---
         follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         follower.update();
 
-
-        // --- 2. TURRET CONTROL LOGIC ---
-        List<AprilTagDetection> detections = aprilTagProcessor.getDetections();
-
+        // Control mode selection
         if (gamepad2.a) {
-            handleAutoAim(detections); // Uses PIXEL error to set turretTargetPosition
+            handleAutoAim();
         } else {
-            handleTurretControl(); // Uses manual joystick to set turretTargetPosition
+            handleTurretControl();
         }
 
-        // --- 3. APPLY TURRET POSITION ---
+        // Apply turret position
         turretTargetPosition = Range.clip(turretTargetPosition, 0.0, 1.0);
-        turretServo1.setPosition(turretTargetPosition);
-        turretServo2.setPosition(turretTargetPosition);
+        if (turretServo1 != null && turretServo2 != null) {
+            turretServo1.setPosition(turretTargetPosition);
+            turretServo2.setPosition(turretTargetPosition);
+        }
 
+        handleShooterControl();
 
-        // --- 4. TELEMETRY ---
-        telemetry.addData("Turret Control Mode", gamepad2.a ? "**AUTO-AIM** (Pixel-Based)" : "**MANUAL** (Direct Map)");
+        telemetry.addData("Turret Control Mode", gamepad2.a ? "**AUTO-AIM** (Limelight Degrees)" : "**MANUAL** (Direct Map)");
         telemetry.addData("Turret Target Pos", "%.3f", turretTargetPosition);
-        telemetry.addData("Gamepad2 Left Stick X", "%.3f", gamepad2.left_stick_x);
+        telemetry.addData("Shooter Power", "%.1f (R. Bumper)", (shooterMotor != null) ? shooterMotor.getPower() : 0.0);
         telemetry.update();
-
     }
 
+    private void handleShooterControl() {
+        if (shooterMotor == null) return;
 
+        if (gamepad2.right_bumper) {
+            shooterMotor.setPower(SHOOTER_MAX_POWER);
+        } else {
+            shooterMotor.setPower(0.0);
+        }
+    }
 
     private void handleTurretControl() {
         double turretMoveInput = gamepad2.left_stick_x;
-
-        // Map the joystick input [-1.0 to 1.0] to the servo position [0.0 to 1.0].
         turretTargetPosition = (turretMoveInput + 1.0) / 2.0;
     }
 
-
-    /**
-     * Handles pixel-based auto-aiming logic, adapted from your CRServo sample.
-     * The correction is applied continuously to the Servo's position.
-     */
-    private void handleAutoAim(List<AprilTagDetection> detections) {
-        AprilTagDetection targetTag = null;
-
-        for (AprilTagDetection detection : detections) {
-            if (detection.id == TARGET_TAG_ID) {
-                targetTag = detection;
-                break;
-            }
+    // --- LIMELIGHT AUTO-AIM LOGIC ---
+    private void handleAutoAim() {
+        if (limelight == null) {
+            telemetry.addLine("AUTO-AIM: **Limelight not initialized!**");
+            return;
         }
 
-        if (targetTag != null) {
-            // Use tag's center.x for robust targeting
-            double tagX = targetTag.center.x;
-            double pixelError = tagX - CENTER_X; // Positive error means tag is to the right
+        LLResult result = limelight.getLatestResult();
 
-            telemetry.addData("Tag Center X", "%.2f", tagX);
+        if (result != null && result.isValid()) {
+            double tx = result.getTx();
 
-            // TARGET_YAW_DEADZONE is now the PIXEL DEADZONE (e.g., 15.0 pixels)
-            if (Math.abs(pixelError) > TARGET_YAW_DEADZONE) {
+            telemetry.addData("Target X (Degrees)", "%.2f", tx);
 
-                // AIM_KP is now the conversion from PIXEL error to SERVO position delta.
-                double correction = pixelError * AIM_KP;
+            if (Math.abs(tx) > AIM_DEADZONE) {
 
-                // MAX_CORRECTION is the max SERVO POSITION CHANGE per loop.
+                double correction = tx * AIM_KP;
+
                 correction = Range.clip(correction, -MAX_CORRECTION, MAX_CORRECTION);
 
-                // Apply correction. Positive pixelError (tag right) requires a NEGATIVE correction
-                // to decrease the servo position (move turret left).
+                // Subtract correction to move the turret toward 0.0 (left) if tx is positive (target is right)
                 turretTargetPosition -= correction;
 
-                telemetry.addLine("AUTO-AIM: **TRACKING** (Pixel Error)");
+                telemetry.addLine("AUTO-AIM: **TRACKING** (Degrees Error)");
+                telemetry.addData("Correction", "%.5f", correction);
             } else {
-                telemetry.addLine("AUTO-AIM: **LOCKED ON!** (Pixel Deadzone)");
+                telemetry.addLine("AUTO-AIM: **LOCKED IN!** (Degrees Deadzone)");
             }
-            telemetry.addData("Pixel Error", "%.2f px", pixelError);
 
         } else {
-            telemetry.addLine("AUTO-AIM: **Searching for Tag ID 20...**");
+            telemetry.addLine("AUTO-AIM: **Limelight No Target**");
         }
     }
 
 
     @Override
     public void stop() {
-        if (visionPortal != null) {
-            visionPortal.stopStreaming();
-            visionPortal.close();
+        if (shooterMotor != null) {
+            shooterMotor.setPower(0);
+        }
+    }
+}
+
+ */
+
+package org.firstinspires.ftc.teamcode.pedroPathing.examples;
+
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Localizer;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.localization.localizers.PinpointLocalizer;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
+
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
+
+@TeleOp(name = "Example TeleOp with Turret Auto-Aim", group = "Examples")
+public class ExampleRobotCentricTeleop extends OpMode {
+
+    private Follower follower;
+    private final Pose startPose = new Pose(0, 0, 0);
+
+    private Servo turretServo1;
+    private Servo turretServo2;
+
+    private double turretTargetPosition = 0.5;
+
+    private DcMotor shooterMotor;
+    private static final double SHOOTER_MAX_POWER = 1.0;
+
+    private Limelight3A limelight;
+
+    private static final int TARGET_TAG_ID = 20;
+
+    private static final double AIM_KP = 0.0008;
+    private static final double AIM_DEADZONE = 1.5;
+    private static final double MAX_CORRECTION = 0.001;
+
+    private boolean isAutoAimActive = false;
+    private boolean a_was_pressed = false;
+
+
+    @Override
+    public void init() {
+        Localizer myLocalizer = new PinpointLocalizer(hardwareMap, startPose);
+        follower = new Follower(hardwareMap, myLocalizer, FConstants.class, LConstants.class);
+        follower.setStartingPose(startPose);
+
+        try {
+            turretServo1 = hardwareMap.get(Servo.class, "turretServo1");
+            turretServo2 = hardwareMap.get(Servo.class, "turretServo2");
+            turretServo1.setPosition(turretTargetPosition);
+            turretServo2.setPosition(turretTargetPosition);
+        } catch (Exception e) {
+            telemetry.addData("Error", "Could not find turret servos. Check config.");
+        }
+
+        try {
+            shooterMotor = hardwareMap.get(DcMotor.class, "shooterMotor");
+            shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            telemetry.addData("Shooter", "Initialized");
+        } catch (Exception e) {
+            telemetry.addData("Error", "Could not find shooter.");
+        }
+
+        // --- LIMELIGHT INITIALIZATION ---
+        try {
+            limelight = hardwareMap.get(Limelight3A.class, "Limelight");
+            // Set to Pipeline 0
+            limelight.pipelineSwitch(0);
+            telemetry.addData("Limelight", "Initialized on Pipeline 0");
+        } catch (Exception e) {
+            telemetry.addData("Error", "Could not find Limelight 3A. Check config.");
+        }
+
+        telemetry.update();
+    }
+
+    @Override
+    public void start() {
+        follower.startTeleopDrive();
+        if (limelight != null) {
+            limelight.start();
+        }
+    }
+
+    @Override
+    public void loop() {
+
+        follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+        follower.update();
+
+        boolean a_is_pressed = gamepad2.a;
+
+        if (a_is_pressed && !a_was_pressed) {
+            isAutoAimActive = !isAutoAimActive;
+        }
+        a_was_pressed = a_is_pressed;
+
+
+        if (isAutoAimActive) {
+            handleAutoAim();
+        } else {
+            handleTurretControl();
+        }
+
+        turretTargetPosition = Range.clip(turretTargetPosition, 0.0, 1.0);
+        if (turretServo1 != null && turretServo2 != null) {
+            turretServo1.setPosition(turretTargetPosition);
+            turretServo2.setPosition(turretTargetPosition);
+        }
+
+        handleShooterControl();
+
+        telemetry.addData("Turret Control Mode", isAutoAimActive ? "🤖 **AUTO-AIM** (Toggle ON)" : "🎮 **MANUAL** (Toggle OFF)");
+        telemetry.addData("Turret Target Pos", "%.3f", turretTargetPosition);
+        telemetry.addData("Shooter Power", "%.1f (R. Bumper)", (shooterMotor != null) ? shooterMotor.getPower() : 0.0);
+        telemetry.update();
+    }
+
+    private void handleShooterControl() {
+        if (shooterMotor == null) return;
+
+        if (gamepad2.right_bumper) {
+            shooterMotor.setPower(SHOOTER_MAX_POWER);
+        } else {
+            shooterMotor.setPower(0.0);
+        }
+    }
+
+    private void handleTurretControl() {
+        double turretMoveInput = gamepad2.left_stick_x;
+        turretTargetPosition = (turretMoveInput + 1.0) / 2.0;
+    }
+
+    private void handleAutoAim() {
+        if (limelight == null) {
+            telemetry.addLine("AUTO-AIM: **Limelight not initialized!**");
+            return;
+        }
+
+        LLResult result = limelight.getLatestResult();
+
+        if (result != null && result.isValid()) {
+            double tx = result.getTx();
+
+            telemetry.addData("Target X (Degrees)", "%.2f", tx);
+
+            if (Math.abs(tx) > AIM_DEADZONE) {
+
+                double correction = tx * AIM_KP;
+
+                correction = Range.clip(correction, -MAX_CORRECTION, MAX_CORRECTION);
+
+                turretTargetPosition -= correction;
+
+                telemetry.addLine("AUTO-AIM: **TRACKING** (Degrees Error)");
+                telemetry.addData("Correction", "%.5f", correction);
+            } else {
+                telemetry.addLine("AUTO-AIM: **LOCKED IN!** (Degrees Deadzone)");
+            }
+
+        } else {
+            telemetry.addLine("AUTO-AIM: **Limelight No Target**");
+        }
+    }
+
+
+    @Override
+    public void stop() {
+        if (shooterMotor != null) {
+            shooterMotor.setPower(0);
         }
     }
 }
