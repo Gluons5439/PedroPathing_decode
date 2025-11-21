@@ -14,7 +14,7 @@ public class LConstants {
         TwoWheelConstants.strafeEncoder_HardwareMapName = "backRightMotor";
         TwoWheelConstants.forwardEncoderDirection = Encoder.REVERSE;
         TwoWheelConstants.strafeEncoderDirection = Encoder.REVERSE;
-        TwoWheelConstants.IMU_HardwareMapName = "imu";
+        TwoWheelConstants.IMU_HardwareMapName = "pinpoint";
         TwoWheelConstants.IMU_Orientation = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.LEFT);
     }
 }

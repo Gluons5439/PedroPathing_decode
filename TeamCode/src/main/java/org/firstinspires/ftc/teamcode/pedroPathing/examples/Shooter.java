@@ -197,10 +197,11 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
+import com.pedropathing.util.Timer;
 
 @TeleOp(name = "Example TeleOp with Turret Auto-Aim", group = "Examples")
-public class ExampleRobotCentricTeleop extends OpMode {
-
+public class Shooter extends OpMode {
+    Timer shoottimer;
     private Follower follower;
     private final Pose startPose = new Pose(0, 0, 0);
 
@@ -269,6 +270,8 @@ public class ExampleRobotCentricTeleop extends OpMode {
 
     @Override
     public void loop() {
+        shoottimer = new Timer();
+
 
         follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
         follower.update();
@@ -301,14 +304,8 @@ public class ExampleRobotCentricTeleop extends OpMode {
         telemetry.update();
     }
 
-    private void handleShooterControl() {
-        if (shooterMotor == null) return;
-
-        if (gamepad2.right_bumper) {
-            shooterMotor.setPower(SHOOTER_MAX_POWER);
-        } else {
-            shooterMotor.setPower(0.0);
-        }
+    void handleShooterControl() {
+        shooterMotor.setPower(SHOOTER_MAX_POWER);
     }
 
     private void handleTurretControl() {
