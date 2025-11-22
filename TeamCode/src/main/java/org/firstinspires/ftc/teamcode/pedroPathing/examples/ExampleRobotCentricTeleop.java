@@ -403,9 +403,7 @@ public class ExampleRobotCentricTeleop extends OpMode {
         shooterMotor.setPower(shooterActive ? SHOOTER_MAX_POWER : 0);
     }
 
-    // ----------------------------
-    // TRANSFER SERVOS (POSITION)
-    // ----------------------------
+
     private void handleTransferControl() {
         if (transferServo1 == null || transferServo2 == null) return;
 
