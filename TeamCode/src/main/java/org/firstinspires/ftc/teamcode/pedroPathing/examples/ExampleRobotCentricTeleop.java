@@ -470,7 +470,6 @@ public class ExampleRobotCentricTeleop extends OpMode {
 }
 */
 
-
 package org.firstinspires.ftc.teamcode.pedroPathing.examples;
 
 import com.pedropathing.follower.Follower;
@@ -521,10 +520,19 @@ public class ExampleRobotCentricTeleop extends OpMode {
     // -------------------------------------
     private Servo transferServo1;
     private Servo transferServo2;
+    private static final double TRANSFER_UP_POS = 0.6;    // soft up
+    private static final double TRANSFER_DOWN_POS = 0.2;  // soft down
 
-    // soft positions for gentle movement
-    private static final double TRANSFER_UP_POS = 0.6;    // up toward turret
-    private static final double TRANSFER_DOWN_POS = 0.2;  // reset/down
+    // ----------------------------
+    // TRANSFER SEQUENCE STATE
+    // ----------------------------
+    private boolean lbSequenceActive = false;
+    private boolean rbSequenceActive = false;
+    private int rbStep = 0;
+    private long rbTimer = 0;
+    private long lbTimer = 0;
+    private static final long BALL_MOVE_TIME = 900;            // ms per ball
+    private static final long INTERVAL_BETWEEN_BALLS = 900;   // ms between balls
 
     // -------------------------------------
     // LIMELIGHT AUTO-AIM
@@ -577,7 +585,7 @@ public class ExampleRobotCentricTeleop extends OpMode {
         }
 
         // ----------------------------
-        // TRANSFER SERVOS (same axle)
+        // TRANSFER SERVOS
         // ----------------------------
         try {
             transferServo1 = hardwareMap.get(Servo.class, "Transfer1");
@@ -646,7 +654,7 @@ public class ExampleRobotCentricTeleop extends OpMode {
         // SUBSYSTEMS
         // ----------------------------
         handleShooterControl();     // B toggle
-        handleTransferControl();    // NEW: transfer servos + intake
+        handleTransferControl();    // LB/RB transfer sequence
 
         telemetry.addData("Turret Mode", isAutoAimActive ? "AUTO-AIM" : "MANUAL");
         telemetry.addData("Turret Pos", turretTargetPosition);
@@ -671,37 +679,76 @@ public class ExampleRobotCentricTeleop extends OpMode {
     }
 
     // ----------------------------
-    // TRANSFER SERVOS + INTAKE
+    // TRANSFER + INTAKE SEQUENCE
     // ----------------------------
     private void handleTransferControl() {
         if (transferServo1 == null || transferServo2 == null) return;
 
         boolean LB = gamepad2.left_bumper;
         boolean RB = gamepad2.right_bumper;
+        long currentTime = System.currentTimeMillis();
 
-        // BOTH bumpers raise transfer to UP
-        if (LB || RB) {
-
-            // BOTH servos must move the same direction (same axle)
+        // ------------------------
+        // LB → move one ball
+        // ------------------------
+        if (LB && !lbSequenceActive && !rbSequenceActive) {
+            lbSequenceActive = true;
+            lbTimer = currentTime;
             transferServo1.setPosition(TRANSFER_UP_POS);
             transferServo2.setPosition(TRANSFER_UP_POS);
-
-            // Only RB turns intake ON
-            if (RB && intakeMotor != null) {
-                intakeMotor.setPower(INTAKE_POWER);
-            } else if (intakeMotor != null) {
-                intakeMotor.setPower(0);
-            }
-
+            intakeMotor.setPower(0); // intake OFF
             return;
         }
 
-        // Neither bumper → go DOWN + stop intake
+        if (lbSequenceActive) {
+            if (currentTime - lbTimer >= BALL_MOVE_TIME) {
+                transferServo1.setPosition(TRANSFER_DOWN_POS);
+                transferServo2.setPosition(TRANSFER_DOWN_POS);
+                lbSequenceActive = false;
+            }
+            return;
+        }
+
+        // ------------------------
+        // RB → move last 2 balls
+        // ------------------------
+        if (RB && !rbSequenceActive && !lbSequenceActive) {
+            rbSequenceActive = true;
+            rbStep = 0;
+            rbTimer = currentTime;
+            intakeMotor.setPower(INTAKE_POWER);
+            transferServo1.setPosition(TRANSFER_UP_POS);
+            transferServo2.setPosition(TRANSFER_UP_POS);
+            return;
+        }
+
+        if (rbSequenceActive) {
+            if (rbStep < 2) { // 2 more balls
+                if (currentTime - rbTimer >= INTERVAL_BETWEEN_BALLS) {
+                    rbStep++;
+                    rbTimer = currentTime;
+                    transferServo1.setPosition(TRANSFER_DOWN_POS);
+                    transferServo2.setPosition(TRANSFER_DOWN_POS);
+                } else if (currentTime - rbTimer >= INTERVAL_BETWEEN_BALLS / 2) {
+                    transferServo1.setPosition(TRANSFER_UP_POS);
+                    transferServo2.setPosition(TRANSFER_UP_POS);
+                }
+            } else {
+                // done
+                transferServo1.setPosition(TRANSFER_DOWN_POS);
+                transferServo2.setPosition(TRANSFER_DOWN_POS);
+                intakeMotor.setPower(0);
+                rbSequenceActive = false;
+            }
+            return;
+        }
+
+        // ------------------------
+        // default idle
+        // ------------------------
         transferServo1.setPosition(TRANSFER_DOWN_POS);
         transferServo2.setPosition(TRANSFER_DOWN_POS);
-
-        if (intakeMotor != null)
-            intakeMotor.setPower(0);
+        intakeMotor.setPower(0);
     }
 
     // ----------------------------
@@ -740,6 +787,9 @@ public class ExampleRobotCentricTeleop extends OpMode {
     public void stop() {
         if (shooterMotor != null) shooterMotor.setPower(0);
         if (intakeMotor != null) intakeMotor.setPower(0);
+        if (transferServo1 != null) transferServo1.setPosition(TRANSFER_DOWN_POS);
+        if (transferServo2 != null) transferServo2.setPosition(TRANSFER_DOWN_POS);
     }
 }
+
 
