@@ -413,7 +413,7 @@ public class ExampleRobotCentricTeleop extends OpMode {
         // BOTH bumpers raise transfer to UP
         if (LB || RB) {
             transferServo1.setPosition(TRANSFER_UP_POS);
-            transferServo2.setPosition(TRANSFER_UP_POS);
+            transferServo2.setPosition(TRANSFER_DOWN_POS);
 
             // Only RB turns intake ON
             if (RB && intakeMotor != null) {
@@ -423,6 +423,7 @@ public class ExampleRobotCentricTeleop extends OpMode {
             }
 
             return;
+
         }
 
         // Neither bumper → go DOWN + stop intake
