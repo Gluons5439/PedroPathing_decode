@@ -256,8 +256,8 @@ public class ExampleRobotCentricTeleop extends OpMode {
     private Servo transferServo2;
 
     // UP = into turret, DOWN = reset
-    private static final double TRANSFER_UP_POS = 1.0;
-    private static final double TRANSFER_DOWN_POS = 0.0;
+    private static final double TRANSFER_UP_POS = 0.2;
+    private static final double TRANSFER_DOWN_POS = 0.2;
 
     // -------------------------------------
     // LIMELIGHT AUTO-AIM
