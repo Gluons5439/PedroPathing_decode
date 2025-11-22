@@ -26,7 +26,7 @@ public class BlueBack extends OpMode {
     private Path pathD;  // p8→p9
 
     private DcMotor shooterMotor;
-    private Timer shootTimer = new Timer();
+    private final Timer shootTimer = new Timer();// GET RID OF FINAL!!!!!
 
     /*
      * State machine:
